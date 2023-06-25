@@ -42,8 +42,15 @@ impl From<crate::event::builder::Error> for Error {
     }
 }
 
-/// Simple struct to hold `width` x `height.
+/// Simple struct to hold `width` x `height`.
 pub struct ImageDimensions(u64, u64);
+
+impl ImageDimensions {
+    /// New [`ImageDimensions`]
+    pub fn new(width: u64, height: u64) -> Self {
+        Self(width, height)
+    }
+}
 
 /// [`BadgeDefinition`] event builder
 pub struct BadgeDefinitionBuilder {
@@ -386,8 +393,8 @@ mod tests {
         let example_event: Event = serde_json::from_str(example_event_json).unwrap();
 
         let mut builder = BadgeDefinitionBuilder::new("bravery".to_owned());
-        let image_dimensions = ImageDimensions(1024, 1024);
-        let thumb_size = ImageDimensions(256, 256);
+        let image_dimensions = ImageDimensions::new(1024, 1024);
+        let thumb_size = ImageDimensions::new(256, 256);
         let thumbs = vec![(
             "https://nostr.academy/awards/bravery_256x256.png".to_owned(),
             Some(thumb_size),
