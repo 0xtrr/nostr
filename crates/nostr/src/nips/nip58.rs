@@ -145,13 +145,15 @@ impl BadgeDefinitionBuilder {
 
         let event_builder = EventBuilder::new(Kind::BadgeDefinition, String::new(), &tags);
         let event = event_builder.to_event(keys)?;
-        Ok(BadgeDefinition(event))
+        Ok(BadgeDefinition { event })
     }
 }
 
 /// Badge definition event as specified in NIP-58
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct BadgeDefinition(Event);
+pub struct BadgeDefinition {
+    pub event: Event,
+}
 
 /// Badge award event as specified in NIP-58
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -407,7 +409,7 @@ mod tests {
             .thumbs(thumbs);
 
         let keys = Keys::generate();
-        let badge_definition_event = builder.build(&keys).unwrap().0;
+        let badge_definition_event = builder.build(&keys).unwrap().event;
 
         assert_eq!(badge_definition_event.kind, Kind::BadgeDefinition);
         assert_eq!(badge_definition_event.tags, example_event.tags);
@@ -440,7 +442,7 @@ mod tests {
         let example_event: Event = serde_json::from_str(&example_event_json).unwrap();
 
         let relay_url = UncheckedUrl::from_str("wss://relay").unwrap();
-        let badge_definition = get_badge_with_id_only("bravery".to_owned(), &keys).0;
+        let badge_definition = get_badge_with_id_only("bravery".to_owned(), &keys).event;
 
         let awarded_pub_keys = vec![
             Tag::PubKey(pub_key.clone(), Some(relay_url.clone())),
@@ -465,13 +467,13 @@ mod tests {
             Tag::PubKey(pub_key.clone(), Some(relay_url.clone())),
             Tag::PubKey(pub_key.clone(), Some(relay_url.clone())),
         ];
-        let bravery_badge_event = get_badge_with_id_only("bravery".to_owned(), &keys).0;
+        let bravery_badge_event = get_badge_with_id_only("bravery".to_owned(), &keys).event;
         let bravery_badge_award =
             BadgeAward::new(&bravery_badge_event, awarded_pub_keys.clone(), &keys)
                 .unwrap()
                 .0;
 
-        let honor_badge_event = get_badge_with_id_only("honor".to_owned(), &keys).0;
+        let honor_badge_event = get_badge_with_id_only("honor".to_owned(), &keys).event;
         let honor_badge_award = BadgeAward::new(&honor_badge_event, awarded_pub_keys, &keys)
             .unwrap()
             .0;
